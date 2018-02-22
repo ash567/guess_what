@@ -5,7 +5,9 @@ import numpy as np
 
 import h5py
 
-from multiprocessing import Pool
+# Replaced because of some pickle error
+# from multiprocessing import Pool
+from multiprocess import Pool
 
 from generic.data_provider.iterator import Iterator
 from generic.data_provider.nlp_utils import DummyTokenizer

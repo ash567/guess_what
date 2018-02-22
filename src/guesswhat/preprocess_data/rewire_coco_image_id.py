@@ -6,9 +6,7 @@ import argparse
 
 
 # Command to run
-# python ./src/guesswhat/preprocess_data/rewire_coco_image_id.py \ 
-#    -image_dir `pwd`/data/img/raw \
-#    -data_out `pwd`/data/img/raw
+# python ./src/guesswhat/preprocess_data/rewire_coco_image_id.py -image_dir `pwd`/data/img/raw -data_out `pwd`/data/img/raw
 
 
 parser = argparse.ArgumentParser(description="Python make_cococaption_id_names.py {cococaption basedir}\n\n"

@@ -2,7 +2,10 @@
 import numpy
 import os
 import tensorflow as tf
-from multiprocessing import Pool
+# Replaced because of some pickle error
+# from multiprocessing import Pool
+from multiprocess import Pool
+
 from tqdm import tqdm
 import numpy as np
 import h5py

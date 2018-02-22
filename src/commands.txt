@@ -1,0 +1,78 @@
+Checking SSH Keys
+---------------------------------------------------
+ls -al ~/.ssh
+
+
+Generating SSH Keys
+-------------------------------------------------------
+ssh-keygen -t rsa -b 4096 -C "ishugarg567@gmail.com"
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_rsa
+
+
+Setting up account on local machine
+------------------------------------------------------
+git config --global user.name "Ishu Garg"
+git config --global user.name
+git config --global user.email "ishugarg567@gmail.com"
+git config --global user.email
+---------------------------------------
+
+Copyting the github project
+---------------------------
+
+git init
+git add *
+git commit -m "First commit"
+Repo: https://github.com/ash567/guess_what.git
+git remote add origin https://github.com/ash567/guess_what.git
+git remote -v
+git push origin master
+
+
+
+
+Commands:
+
+To clone the repo:
+******************
+git clone --recursive https://github.com/GuessWhatGame/guesswhat.git
+
+
+To Unzip
+********
+unzip data/img/test2014.zip -d data/img/raw
+
+To install
+**********
+pip install \
+    tensorflow\
+    nltk \
+    tqdm \
+    image
+
+
+Before running code print
+
+export PYTHONPATH=src:${PYTHONPATH} 
+
+Making coco api
+
+
+------------------------------
+
+Remember to have init python file in each directory so as to import the module
+Also define the python paths to be src
+
+
+0
+down vote
+You cannot pickle instance methods using the multiprocessing package in python. Instance methods aren't listed in the pickling documentation.
+
+If you don't mind using an external library, you can look at multiprocess, which is a drop-in replacement for python's multiprocessing. To make use of the library, you would do the following:
+
+pip install multiprocess
+replacefrom multiprocessing import Pool, TimeoutError, cpu_count with
+from multiprocess import Pool, TimeoutError, cpu_count
+I have tested your example on my machine and it actually executes using multiprocess.
+-------------------------

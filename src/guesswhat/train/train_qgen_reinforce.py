@@ -1,6 +1,10 @@
 import argparse
 import os
-from multiprocessing import Pool
+
+# Replaced because of some pickle error
+# from multiprocessing import Pool
+from multiprocess import Pool
+
 import logging
 
 import tensorflow as tf

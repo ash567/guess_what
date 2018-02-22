@@ -1,3 +1,17 @@
+# array=( img crop )
+# for mode in "${array[@]}"; do
+#    python src/guesswhat/preprocess_data/extract_img_features.py \
+#      -img_dir data/img/raw \
+#      -data_dir data \
+#      -out_dir data/img/ft_vgg_$mode \
+#      -network vgg \
+#      -ckpt data/vgg_16.ckpt \
+#      -feature_name fc8 \
+#      -mode $mode \
+#      -gpu_ratio 0.0 \
+#      -no_thread 4
+# done
+
 #!/usr/bin/env python
 import os
 import tensorflow as tf
