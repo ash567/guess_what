@@ -4,6 +4,13 @@ from glob import glob
 
 import argparse
 
+
+# Command to run
+# python ./src/guesswhat/preprocess_data/rewire_coco_image_id.py \ 
+#    -image_dir `pwd`/data/img/raw \
+#    -data_out `pwd`/data/img/raw
+
+
 parser = argparse.ArgumentParser(description="Python make_cococaption_id_names.py {cococaption basedir}\n\n"
           "After unpacking MS COCO zip files, you should end up with a\n"
           "base directory with train2014, valid2014 and test2014 folder in it.\n"
@@ -22,31 +29,16 @@ assert args.image_dir.startswith(os.path.sep), "The path must be a root path: ".
 assert args.data_out.startswith(os.path.sep), "The path must be a root path: ".format(args.data_out)
 
 
-# Original Code
-# for path in args.image_subdir:
-#     for name in glob(os.path.join(args.image_dir, path, "*")):
 
-#         # retrieve id images
-#         res = re.match(r'.*_0*(\d+\.\w+)$', name)
-#         if not res:
-#             continue
-
-#         # create symlink with id_image
-#         os.symlink(name, os.path.join(args.data_out, res.group(1)))
-
-
-# Just storing the id names.
 for path in args.image_subdir:
-
-    l = []
     for name in glob(os.path.join(args.image_dir, path, "*")):
 
-        ids = [] 
         # retrieve id images
         res = re.match(r'.*_0*(\d+\.\w+)$', name)
         if not res:
             continue
 
-        ids.append[res.group(1)]
         # create symlink with id_image
         os.symlink(name, os.path.join(args.data_out, res.group(1)))
+
+
