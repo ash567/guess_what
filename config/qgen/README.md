@@ -14,6 +14,7 @@ The keyword "model" refers model configuration of the qgen:
     "word_embedding_size": int,         # dimension of the word embedding for the dialogue
     "num_lstm_units": int,              # dimension of the LSTM for the dialogue
     "image_embedding_size": int,        # dimension of the image projection
+    "attention": string                 # options: none, mean classic and glimpse
 
     "image": {                          # configuration of the inout image
       "image_input": "features"/"raw",  # select the image inputs: raw vs feature

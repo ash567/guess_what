@@ -43,6 +43,8 @@ class QGenNetworkLSTM(AbstractNetwork):
             self.greedy = tf.placeholder_with_default(False, shape=(), name="greedy") # use for graph
             self.samples = None
 
+            # For each length of the answer, we are finding the next token
+
             # remove last token
             input_dialogues = self.dialogues[:, :-1]
             input_seq_length = self.seq_length - 1
@@ -63,7 +65,13 @@ class QGenNetworkLSTM(AbstractNetwork):
             if len(config["image"]["dim"]) == 1:
                 self.image_out = self.images
             else:
-                self.image_out = get_attention(self.images, None, "none") #TODO: improve by using the previous lstm state?
+                # BUG: Pass a config not a string
+                self.image_out = get_attention(self.images, None, config["attention"]) #TODO: improve by using the previous lstm state?
+                # Temporary fix
+                self.image_out = tf.contrib.layers.flatten(self.image_out)
+
+
+
 
 
             # Reduce the embedding size of the image
@@ -74,6 +82,7 @@ class QGenNetworkLSTM(AbstractNetwork):
                 image_emb = tf.tile(image_emb, [1, tf.shape(input_dialogues)[1], 1])
 
             # Compute the question embedding
+            # 
             input_words = utils.get_embedding(
                 input_dialogues,
                 n_words=num_words,

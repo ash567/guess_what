@@ -11,9 +11,11 @@ class AbstractNetwork(object):
     def get_parameters(self, finetune=None):
         return [v for v in tf.trainable_variables() if self.scope_name in v.name]
 
+
     def get_sources(self, sess):
         return [os.path.basename(tensor.name) for tensor in self.get_inputs(sess) if self.scope_name in tensor.name]
-
+        
+    # How is get_sources different from get_inputs? 
     def get_inputs(self, sess):
         placeholders = [p for p in sess.graph.get_operations() if "holder" in p.type if self.scope_name in p.name]
         if self.device is not '':

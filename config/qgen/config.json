@@ -1,13 +1,19 @@
 {
+
   "model": {
 
     "word_embedding_size": 512,
     "num_lstm_units": 1024,
     "image_embedding_size": 512,
+    "attention" : {
+        "mode": "none",
+        "no_attention_mlp": 256,
+        "no_glimpses": 2
+      },
 
     "image": {
       "image_input": "fc8",
-      "dim": [1000]
+      "dim": [224, 224, 3]
     }
 
   },
@@ -19,6 +25,13 @@
     "clip_val": 5
   },
 
-  "seed": -1
 
+  "seed": -1,
+
+  "comments":{
+    "attentiong": "Attention inserted",
+    "dimetiontion of image beforee": "if using raw take 224, 224, 3 else just 1000"
+
+  }
 }
+

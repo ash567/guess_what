@@ -141,7 +141,8 @@ class Object:
 
 
 
-
+# Loads the actual data which should be next feeded to placeholders
+# This does not have the images but image
 class Dataset(AbstractDataset):
     """Loads the dataset."""
     def __init__(self, folder, which_set, image_builder=None, crop_builder=None):

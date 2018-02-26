@@ -9,6 +9,7 @@
 #      -feature_name fc8 \
 #      -mode $mode \
 #      -gpu_ratio 0.0 \
+#      -batch_size 4 \
 #      -no_thread 4
 # done
 

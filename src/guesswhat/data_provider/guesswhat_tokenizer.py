@@ -1,6 +1,16 @@
 from nltk.tokenize import TweetTokenizer
 import json
 
+# The work of this file is:
+
+# Assign an int value to each word using dictionary_file which is futher used for tokenization
+# apply: converts a given english dialog into equivalent token dialog
+# decode: does the reverse of apply
+# split_questions: return a list of tokenized [question and answer]
+# The start and end of the dialog tokens are removed.
+# Each of the item in the array of tokesn: tokens of question followed by token of answer
+# ? is included
+
 class GWTokenizer:
     """ """
     def __init__(self, dictionary_file):

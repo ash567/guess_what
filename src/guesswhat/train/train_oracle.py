@@ -84,7 +84,7 @@ if __name__ == '__main__':
 
     # Build Optimizer
     logger.info('Building optimizer..')
-    optimizer, outputs = create_optimizer(network, config, finetune=finetune)
+    optimizer, outputs = create_optimizer(network, config["optimizer"], finetune=finetune)
 
     ###############################
     #  START  TRAINING
@@ -127,6 +127,7 @@ if __name__ == '__main__':
                                       batch_size=batch_size, pool=cpu_pool,
                                       batchifier=batchifier,
                                       shuffle=True)
+            
             train_loss, train_accuracy = evaluator.process(sess, train_iterator, outputs=outputs + [optimizer])
 
             valid_iterator = Iterator(validset, pool=cpu_pool,

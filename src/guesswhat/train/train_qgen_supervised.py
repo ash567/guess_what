@@ -47,14 +47,23 @@ if __name__ == '__main__':
     ###############################
     #  LOAD DATA
     #############################
+    # I still do not know where and when are the words are getting coverted into tokens.
 
-    # Load image
+    # Load image the actual images. The type of images depend of the config file [raw, fc7]
+    
+
+    # Returns a appropriate loader [This function only does the selection]
+    # The Loader is supposed to take the image id. Based on image id, build finds what to load.
+    # After we have built, it returns a loader. On loader just call get_image to get the image
     logger.info('Loading images..')
     image_loader = get_img_builder(config['model']['image'], args.img_dir)
     crop_loader = None  # get_img_loader(config, 'crop', args.image_dir)
 
     # Load data
     logger.info('Loading data..')
+
+    # Loads the actual data which should be next feeded to placeholders
+    # dialogs Not yet tokenized
     trainset = Dataset(args.data_dir, "train", image_loader, crop_loader)
     validset = Dataset(args.data_dir, "valid", image_loader, crop_loader)
     testset = Dataset(args.data_dir, "test", image_loader, crop_loader)
@@ -69,7 +78,7 @@ if __name__ == '__main__':
 
     # Build Optimizer
     logger.info('Building optimizer..')
-    optimizer, outputs = create_optimizer(network, config)
+    optimizer, outputs = create_optimizer(network, config["optimizer"])
 
     ###############################
     #  START TRAINING
@@ -88,6 +97,7 @@ if __name__ == '__main__':
 
     with tf.Session(config=tf.ConfigProto(gpu_options=gpu_options)) as sess:
 
+        # Returns all the input of the network (The placeholder variables)
         sources = network.get_sources(sess)
         logger.info("Sources: " + ', '.join(sources))
 

@@ -204,8 +204,10 @@ class RawCropLoader(AbstractImgLoader):
 
         return crop
 
-
-
+# I still do not understand the reason for loader builder concept! But the working is as follows:
+# Returns a appropriate builder [This function only does the selection]
+# The builder is supposed to take the image id. Based on image id, build finds what to load.
+# After we called built over builder, it returns a loader. On loader just call get_image to get the image
 def get_img_builder(config, image_dir, is_crop=False, bufferize=None):
 
     image_input = config["image_input"]

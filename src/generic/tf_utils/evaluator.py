@@ -83,6 +83,8 @@ class Evaluator(object):
         return aggregated_outputs
 
     def execute(self, sess, output, batch):
+
+        # VVIP LINE
         feed_dict = {self.scope + key + ":0": value for key, value in batch.items() if key in self.provided_sources}
         return sess.run(output, feed_dict=feed_dict)
 

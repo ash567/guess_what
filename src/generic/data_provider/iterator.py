@@ -46,7 +46,7 @@ def split_batch(games, batch_size, use_padding):
 
     return batch
 
-
+# This takes data from dataset and filters the data according to the batchifier and then just creates a iterator
 class Iterator(object):
     """Provides an generic multithreaded iterator over the dataset."""
 

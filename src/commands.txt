@@ -76,3 +76,43 @@ replacefrom multiprocessing import Pool, TimeoutError, cpu_count with
 from multiprocess import Pool, TimeoutError, cpu_count
 I have tested your example on my machine and it actually executes using multiprocess.
 -------------------------
+
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+Aborted (core dumped)
+
+
+It was due to large batch size. Memory issues.
+-------------------------------------
+creating dictionary
+python src/guesswhat/preprocess_data/create_dictionary.py -data_dir data -dict_file dict.json -min_occ 3
+
+----------------------------------------------
+training questioner
+
+python src/guesswhat/train/train_qgen_supervised.py \
+   -data_dir data \
+   -img_dir data/img/ft_vgg_img \
+   -config config/qgen/config.json \
+   -exp_dir out/qgen \
+   -no_thread 2 \
+   -gpu_ratio 0.0
+
+    parser.add_argument("-img_dir", type=str, help='Directory with images')
+    parser.add_argument("-load_checkpoint", type=str, help="Load model parameters from specified checkpoint")
+    parser.add_argument("-continue_exp", type=bool, default=False, help="Continue previously started experiment?")
+---------------------------
+array=( crop )
+for mode in "${array[@]}"; do
+   python src/guesswhat/preprocess_data/extract_img_features.py \
+     -img_dir data/img/raw \
+     -data_dir data \
+     -out_dir data/img/ft_vgg_$mode \
+     -network vgg \
+     -ckpt data/vgg_16.ckpt \
+     -feature_name fc8 \
+     -mode $mode \
+     -gpu_ratio 0.0 \
+     -batch_size 4 \
+     -no_thread 4
+done
