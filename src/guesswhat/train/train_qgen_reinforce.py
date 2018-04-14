@@ -6,6 +6,7 @@ import os
 from multiprocess import Pool
 
 import logging
+from distutils.util import strtobool
 
 import tensorflow as tf
 
@@ -49,10 +50,11 @@ if __name__ == '__main__':
 
     parser.add_argument("-continue_exp", type=bool, default=True, help="Continue previously started experiment?")
     #parser.add_argument("-from_checkpoint", type=str, help="Start from checkpoint?")
-    parser.add_argument("-skip_training", type=bool, default=False, help="Start from checkpoint?")
-    parser.add_argument("-evaluate_all", type=bool, default=False, help="Evaluate sampling, greedy and BeamSearch?")  #TODO use an input list
-    parser.add_argument("-store_games", type=bool, default=True, help="Should we dump the game at evaluation times")
-
+    
+    parser.add_argument("-skip_training",  type=lambda x: bool(strtobool(x)), default="False", help="Start from checkpoint?")
+    parser.add_argument("-evaluate_all", type=lambda x: bool(strtobool(x)), default="False", help="Evaluate sampling, greedy and BeamSearch?")  #TODO use an input list
+    parser.add_argument("-store_games", type=lambda x: bool(strtobool(x)), default="True", help="Should we dump the game at evaluation times")
+ 
 
     parser.add_argument("-gpu_ratio", type=float, default=0.95, help="How muany GPU ram is required? (ratio)")
     parser.add_argument("-no_thread", type=int, default=1, help="No thread to load batch")

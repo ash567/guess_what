@@ -5,6 +5,8 @@ import os
 # Replaced because of some pickle error
 # from multiprocessing import Pool
 from multiprocess import Pool
+from distutils.util import strtobool
+
 
 import tensorflow as tf
 
@@ -36,9 +38,9 @@ if __name__ == '__main__':
     parser.add_argument("-dict_file", type=str, default="dict.json", help="Dictionary file name")
     parser.add_argument("-img_dir", type=str, help='Directory with images')
     parser.add_argument("-load_checkpoint", type=str, help="Load model parameters from specified checkpoint")
-    parser.add_argument("-continue_exp", type=bool, default=False, help="Continue previously started experiment?")
     parser.add_argument("-gpu_ratio", type=float, default=1., help="How many GPU ram is required? (ratio)")
     parser.add_argument("-no_thread", type=int, default=1, help="No thread to load batch")
+    parser.add_argument("-continue_exp", type = lambda x: bool(strtobool(x)), default="False", help="Continue previously started experiment?")
 
     args = parser.parse_args()
     config, exp_identifier, save_path = load_config(args.config, args.exp_dir)
@@ -80,6 +82,7 @@ if __name__ == '__main__':
     logger.info('Building optimizer..')
     optimizer, outputs = create_optimizer(network, config["optimizer"])
 
+
     ###############################
     #  START TRAINING
     #############################
@@ -95,7 +98,19 @@ if __name__ == '__main__':
     cpu_pool = Pool(args.no_thread, maxtasksperchild=1000)
     gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=args.gpu_ratio)
 
+    # Changed for tensorboard
+    # Building the tf.summary writer
+    writer_t = tf.summary.FileWriter(args.exp_dir + '/log/train')
+    writer_v = tf.summary.FileWriter(args.exp_dir + '/log/val')
+
+    # Changed for tensorboard
+    # Keeping how many minibatches have run
+    global_train_step = [0]
+    global_valid_step = [0]
+
+
     with tf.Session(config=tf.ConfigProto(gpu_options=gpu_options)) as sess:
+
 
         # Returns all the input of the network (The placeholder variables)
         sources = network.get_sources(sess)
@@ -118,13 +133,17 @@ if __name__ == '__main__':
                                       batch_size=batch_size, pool=cpu_pool,
                                       batchifier=batchifier,
                                       shuffle=True)
-            [train_loss, _] = evaluator.process(sess, train_iterator, outputs=outputs + [optimizer])
+            # Changed for 
+            [train_loss, _] = evaluator.process(sess, train_iterator, outputs=outputs + [optimizer] + [network.summary], n_batch = global_train_step, writer = writer_t, mod_val = config["freq"])
+            print "The Golbal Train Step is : %d" %(global_train_step[0])
 
             valid_iterator = Iterator(validset, pool=cpu_pool,
                                       batch_size=batch_size*2,
                                       batchifier=batchifier,
                                       shuffle=False)
-            [valid_loss, _] = evaluator.process(sess, valid_iterator, outputs=outputs)
+            # Changed for tensorboard
+            [valid_loss, _] = evaluator.process(sess, valid_iterator, outputs=outputs + [network.summary], n_batch = global_valid_step, writer = writer_v, mod_val = config["freq"] )
+            print "The Golbal valid Step is : %d" %(global_valid_step[0])
 
             logger.info("Training loss: {}".format(train_loss))
             logger.info("Validation loss: {}".format(valid_loss))

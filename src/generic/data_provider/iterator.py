@@ -30,7 +30,7 @@ def split_batch(games, batch_size, use_padding):
     is_done = False
 
     batch = []
-
+    
     while not is_done:
         end = min(i + batch_size, len(games))
         selected_games = games[i:end]
@@ -42,11 +42,14 @@ def split_batch(games, batch_size, use_padding):
                 no_missing = batch_size - len(selected_games)
                 selected_games += games[:no_missing]
 
+        # You may want to sort the games according to the length of the max sentence
         batch.append(selected_games)
 
     return batch
 
 # This takes data from dataset and filters the data according to the batchifier and then just creates a iterator
+# The way in which you want the layout of the input, you need to specify in the batchifier (for example 2-d dialogs)
+
 class Iterator(object):
     """Provides an generic multithreaded iterator over the dataset."""
 

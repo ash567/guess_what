@@ -24,25 +24,33 @@ def is_scalar(x):
 
 
 class Evaluator(object):
-    def __init__(self, provided_sources, scope="", writer=None,
-                 network=None, tokenizer=None): # debug purpose only, do not use in the code
+    # The Writer has been removed
+    # def __init__(self, provided_sources, scope="", writer=None,
+                 # network=None, tokenizer=None): # debug purpose only, do not use in the code
+
+    def __init__(self, provided_sources, scope="",
+                 network=None, tokenizer=None, config = None): 
 
         self.provided_sources = provided_sources
         self.scope = scope
-        self.writer = writer
+        # The writer can be different for train and test and hence must be a argument of the  process so commented
+        # self.writer = writer
         if len(scope) > 0 and not scope.endswith("/"):
             self.scope += "/"
         self.use_summary = False
-
+        # Changed for tensoboard
+        self.config = config
         # Debug tools (should be removed on the long run)
         self.network=network
         self.tokenizer = tokenizer
 
-
-    def process(self, sess, iterator, outputs, listener=None):
+# Changing the signature of the funtion. For many test and val, we would prefer different writers
+    # def process(self, sess, iterator, outputs, writer = None, listener=None):
+    def process(self, sess, iterator, outputs, mod_val = 2, n_batch = None, writer = None, listener=None):
 
         assert isinstance(outputs, list), "outputs must be a list"
 
+    
         original_outputs = list(outputs)
 
         is_training = any([is_optimizer(x) for x in outputs])
@@ -62,19 +70,29 @@ class Evaluator(object):
 
             # evaluate the network on the batch
             results = self.execute(sess, outputs, batch)
+
             # process the results
             i = 0
+
             for var, result in zip(outputs, results):
                 if is_scalar(var) and var in original_outputs:
                     # moving average
                     aggregated_outputs[i] = ((n_iter - 1.) / n_iter) * aggregated_outputs[i] + result / n_iter
                     i += 1
                 elif is_summary(var):  # move into listener?
-                    self.writer.add_summary(result)
+                # The writer is now not a member of the class
+                    # self.writer.add_summary(result)
+                    if writer is not None:
+                        # if steps == 0 or steps % mod_val == 1:
+                        # writer.add_summary(result, steps)
+                        writer.add_summary(result, n_batch[0])
+                    else:
+                        print "writer is None. Can not write summary [in evaluator.py]"
+
 
                 if listener is not None and listener.valid(var):
                     listener.after_batch(result, batch, is_training)
-
+            n_batch[0] = 1 + n_batch[0]
             n_iter += 1
 
         if listener is not None:

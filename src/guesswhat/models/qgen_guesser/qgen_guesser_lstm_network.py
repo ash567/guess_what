@@ -71,7 +71,6 @@ class QGenNetworkLSTM(AbstractNetwork):
                 self.image_out = tf.contrib.layers.flatten(self.image_out)
 
 
-
             # Reduce the embedding size of the image
             with tf.variable_scope('image_embedding'):
                 self.image_emb = utils.fully_connected(self.image_out,

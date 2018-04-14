@@ -92,10 +92,11 @@ training questioner
 
 python src/guesswhat/train/train_qgen_supervised.py \
    -data_dir data \
-   -img_dir data/img/ft_vgg_img \
+   -img_dir data/img/raw \
    -config config/qgen/config.json \
    -exp_dir out/qgen \
    -no_thread 2 \
+   -continue_exp False \
    -gpu_ratio 0.0
 
     parser.add_argument("-img_dir", type=str, help='Directory with images')
@@ -116,3 +117,9 @@ for mode in "${array[@]}"; do
      -batch_size 4 \
      -no_thread 4
 done
+---------------------------------------
+
+git too large file 
+
+https://stackoverflow.com/questions/20002557/how-to-remove-a-too-large-file-in-a-commit-when-my-branch-is-ahead-of-master-by
+---------------------------------------------------

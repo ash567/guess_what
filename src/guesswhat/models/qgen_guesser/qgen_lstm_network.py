@@ -6,17 +6,58 @@ from generic.tf_factory.attention_factory import get_attention
 from generic.tf_utils.abstract_network import AbstractNetwork
 
 
-class QGenNetworkLSTM(AbstractNetwork):
+class QGenGuesserNetworkLSTM(AbstractNetwork):
 
 
     #TODO: add dropout
     def __init__(self, config, num_words, policy_gradient, device='', reuse=False):
-        AbstractNetwork.__init__(self, "qgen", device=device)
+        AbstractNetwork.__init__(self, "qgen_guesser", device=device)
 
         # Create the scope for this graph
         with tf.variable_scope(self.scope_name, reuse=reuse):
 
             mini_batch_size = None
+            
+            # *********************************************************
+            # Placeholders specific for guesser and its processing
+            # *********************************************************
+            
+            # Objects
+            self.obj_mask = tf.placeholder(tf.float32, [mini_batch_size, None], name='obj_mask')
+            self.obj_cats = tf.placeholder(tf.int32, [mini_batch_size, None], name='obj_cats')
+            self.obj_spats = tf.placeholder(tf.float32, [mini_batch_size, None, config['spat_dim']], name='obj_spats')
+
+            # Targets
+            self.targets = tf.placeholder(tf.int32, [mini_batch_size], name="targets_index")
+
+            self.object_cats_emb = utils.get_embedding(
+                self.obj_cats,
+                config['no_categories'] + 1,
+                config['cat_emb_dim'],
+                scope='cat_embedding')
+
+            self.objects_input = tf.concat([self.object_cats_emb, self.obj_spats], axis=2)
+            self.flat_objects_inp = tf.reshape(self.objects_input, [-1, config['cat_emb_dim'] + config['spat_dim']])
+
+            with tf.variable_scope('obj_mlp'):
+                h1 = utils.fully_connected(
+                    self.flat_objects_inp,
+                    n_out=config['obj_mlp_units'],
+                    activation='relu',
+                    scope='l1')
+                h2 = utils.fully_connected(
+                    h1,
+                    n_out=config['dialog_emb_dim'],
+                    activation='relu',
+                    scope='l2')
+
+            obj_embs = tf.reshape(h2, [-1, tf.shape(self.obj_cats)[1], config['dialog_emb_dim']])
+
+
+
+            # *********************************************************
+            # Placeholders for Qgen and common placeholder for guesser and its processing
+            # *********************************************************
 
             # Image
             self.images = tf.placeholder(tf.float32, [mini_batch_size] + config['image']["dim"], name='images')
@@ -30,6 +71,8 @@ class QGenNetworkLSTM(AbstractNetwork):
             # Rewards
             self.cum_rewards = tf.placeholder(tf.float32, shape=[mini_batch_size, None], name='cum_reward')
 
+
+
             # DECODER Hidden state (for beam search)
             zero_state = tf.zeros([1, config['num_lstm_units']])  # default LSTM state is a zero-vector
             zero_state = tf.tile(zero_state, [tf.shape(self.images)[0], 1])  # trick to do a dynamic size 0 tensors
@@ -38,7 +81,10 @@ class QGenNetworkLSTM(AbstractNetwork):
             self.decoder_zero_state_h = tf.placeholder_with_default(zero_state, [mini_batch_size, config['num_lstm_units']], name="state_h")
             decoder_initial_state = tf.contrib.rnn.LSTMStateTuple(c=self.decoder_zero_state_c, h=self.decoder_zero_state_h)
 
+            # *******
             # Misc
+            # *******
+            
             self.is_training = tf.placeholder(tf.bool, name='is_training')
             self.greedy = tf.placeholder_with_default(False, shape=(), name="greedy") # use for graph
             self.samples = None
