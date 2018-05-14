@@ -1,3 +1,20 @@
+Before running code print
+
+export PYTHONPATH=src:${PYTHONPATH} 
+
+---------------------------
+training qgen_guesser
+
+python src/guesswhat/train/train_qgen_guesser_supervised.py \
+   -data_dir data \
+   -img_dir data/img/raw \
+   -config config/qgen_guesser/config.json \
+   -exp_dir out/qgen_guesser \
+   -no_thread 2 \
+   -continue_exp False \
+   -gpu_ratio 0.0
+
+
 Checking SSH Keys
 ---------------------------------------------------
 ls -al ~/.ssh
@@ -52,9 +69,6 @@ pip install \
     image
 
 
-Before running code print
-
-export PYTHONPATH=src:${PYTHONPATH} 
 
 Making coco api
 
@@ -102,7 +116,35 @@ python src/guesswhat/train/train_qgen_supervised.py \
     parser.add_argument("-img_dir", type=str, help='Directory with images')
     parser.add_argument("-load_checkpoint", type=str, help="Load model parameters from specified checkpoint")
     parser.add_argument("-continue_exp", type=bool, default=False, help="Continue previously started experiment?")
+
+training guesser
+
+
+  parser.add_argument("-data_dir", type=str, help="Directory with data")
+    parser.add_argument("-exp_dir", type=str, help="Directory in which experiments are stored")
+    parser.add_argument("-img_dir", type=str, help='Directory with images')
+    parser.add_argument("-config", type=str, help="Configuration file")
+    parser.add_argument("-dict_file", type=str, default="dict.json", help="Dictionary file name")
+    parser.add_argument("-load_checkpoint", type=str, help="Load model parameters from specified checkpoint")
+    parser.add_argument("-continue_exp", lambda x: bool(strtobool(x)), default="False", help="Continue previously started experiment?")
+    parser.add_argument("-gpu_ratio", type=float, default=1., help="How many GPU ram is required? (ratio)")
+    parser.add_argument("-no_thread", type=int, default=1, help="No thread to load batch")
+
+
 ---------------------------
+train guesser
+
+python src/guesswhat/train/train_guesser.py \
+   -data_dir data \
+   -img_dir data/img/raw \
+   -config config/guesser/config.json \
+   -exp_dir out/guesser \
+   -no_thread 2 \
+   -continue_exp False \
+   -gpu_ratio 0.0
+
+---------------------------
+
 array=( crop )
 for mode in "${array[@]}"; do
    python src/guesswhat/preprocess_data/extract_img_features.py \

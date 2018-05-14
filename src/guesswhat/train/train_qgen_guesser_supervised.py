@@ -5,6 +5,8 @@ import os
 # Replaced because of some pickle error
 # from multiprocessing import Pool
 from multiprocess import Pool
+from distutils.util import strtobool
+
 
 import tensorflow as tf
 
@@ -20,16 +22,19 @@ from guesswhat.data_provider.guesswhat_dataset import Dataset
 from guesswhat.data_provider.questioner_batchifier import QuestionerBatchifier
 from guesswhat.data_provider.guesswhat_tokenizer import GWTokenizer
 
-from guesswhat.models.qgen.qgen_lstm_network import QGenGuesserNetworkLSTM
+from guesswhat.models.qgen_guesser.qgen_guesser_lstm_network import QGenGuesserNetworkLSTM
 
 
+# from guesswhat.models.qgen.qgen_lstm_network import QGenNetworkLSTM
+
+# TODO IMP: MAKE TWO Optimizer for the guesser and the qgen
 if __name__ == '__main__':
 
     ###############################
     #  LOAD CONFIG
     #############################
 
-    parser = argparse.ArgumentParser('QGenGuesser network baseline!')
+    parser = argparse.ArgumentParser('QGen_Guesser network baseline!')
 
     parser.add_argument("-data_dir", type=str, help="Directory with data")
     parser.add_argument("-exp_dir", type=str, help="Directory in which experiments are stored")
@@ -37,9 +42,9 @@ if __name__ == '__main__':
     parser.add_argument("-dict_file", type=str, default="dict.json", help="Dictionary file name")
     parser.add_argument("-img_dir", type=str, help='Directory with images')
     parser.add_argument("-load_checkpoint", type=str, help="Load model parameters from specified checkpoint")
-    parser.add_argument("-continue_exp", type=bool, default=False, help="Continue previously started experiment?")
     parser.add_argument("-gpu_ratio", type=float, default=1., help="How many GPU ram is required? (ratio)")
     parser.add_argument("-no_thread", type=int, default=1, help="No thread to load batch")
+    parser.add_argument("-continue_exp", type = lambda x: bool(strtobool(x)), default="False", help="Continue previously started experiment?")
 
     args = parser.parse_args()
     config, exp_identifier, save_path = load_config(args.config, args.exp_dir)
@@ -75,7 +80,7 @@ if __name__ == '__main__':
 
     # Build Network
     logger.info('Building network..')
-    network = QGenNetworkLSTM(config["model"], num_words=tokenizer.no_words, policy_gradient=False)
+    network = QGenGuesserNetworkLSTM(config["model"], num_words=tokenizer.no_words, policy_gradient=False)
 
     # Build Optimizer
     logger.info('Building optimizer..')
@@ -87,7 +92,8 @@ if __name__ == '__main__':
     #############################
 
     # Load config
-    batch_size = config['optimizer']['batch_size']
+
+    batch_size = config["model"]["batch_size"]
     no_epoch = config["optimizer"]["no_epoch"]
 
     # create a saver to store/load checkpoint
@@ -104,6 +110,7 @@ if __name__ == '__main__':
 
     # Changed for tensorboard
     # Keeping how many minibatches have run
+    # Keeping them as list and passing list to a function has the same effect as pass by reference
     global_train_step = [0]
     global_valid_step = [0]
 
@@ -136,10 +143,17 @@ if __name__ == '__main__':
             [train_loss, _] = evaluator.process(sess, train_iterator, outputs=outputs + [optimizer] + [network.summary], n_batch = global_train_step, writer = writer_t, mod_val = config["freq"])
             print "The Golbal Train Step is : %d" %(global_train_step[0])
 
+            # Don't know why the batch size is doubled???
+            # valid_iterator = Iterator(validset, pool=cpu_pool,
+            #                           batch_size=batch_size*2,
+            #                           batchifier=batchifier,
+            #                           shuffle=False)
+
             valid_iterator = Iterator(validset, pool=cpu_pool,
-                                      batch_size=batch_size*2,
+                                      batch_size=batch_size,
                                       batchifier=batchifier,
                                       shuffle=False)
+
             # Changed for tensorboard
             [valid_loss, _] = evaluator.process(sess, valid_iterator, outputs=outputs + [network.summary], n_batch = global_valid_step, writer = writer_v, mod_val = config["freq"] )
             print "The Golbal valid Step is : %d" %(global_valid_step[0])

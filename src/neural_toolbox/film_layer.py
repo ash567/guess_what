@@ -1,7 +1,7 @@
 import tensorflow as tf
 import tensorflow.contrib.slim as slim
-
 import neural_toolbox.ft_utils as ft_utils
+
 
 def film_layer(ft, context, reuse=False):
     """
@@ -90,33 +90,33 @@ class FiLMResblock(object):
         return self.output
 
 
-if __name__ == '__main__':
-    import numpy as np
+# if __name__ == '__main__':
+#     import numpy as np
 
-    feature_maps = tf.placeholder(tf.float32, shape=[None, 3, 3, 2])
-    lstm_state = tf.placeholder(tf.float32, shape=[None, 6])
+#     feature_maps = tf.placeholder(tf.float32, shape=[None, 3, 3, 2])
+#     lstm_state = tf.placeholder(tf.float32, shape=[None, 6])
 
-    modulated_feat1 = film_layer(ft=feature_maps, context=lstm_state)
-    modulated_feat2 = FiLMResblock(features=feature_maps, context=lstm_state, is_training=True).get()
+#     modulated_feat1 = film_layer(ft=feature_maps, context=lstm_state)
+#     modulated_feat2 = FiLMResblock(features=feature_maps, context=lstm_state, is_training=True).get()
 
-    sess = tf.InteractiveSession()
-    sess.run(tf.initialize_variables(tf.trainable_variables()))
+#     sess = tf.InteractiveSession()
+#     sess.run(tf.initialize_variables(tf.trainable_variables()))
 
-    feature_maps_np = np.array(
-    [
-        [
-          [ [1,2,3  ], [1, 2, 3] , [0, 0, 0]],
-          [ [1, 2,3 ], [1, 2, 3] , [1, 1, 1] ]
-        ],
-        [
-            [[-1, 1, 0], [0, 0, 0], [-1, 1, 0]],
-            [[-1, 1, 0], [-1, 1, 1], [-4, 1, 4]]
-        ]
-    ]    )
-    feature_maps_np = np.transpose(feature_maps_np, axes=[0,2,3,1])
+#     feature_maps_np = np.array(
+#     [
+#         [
+#           [ [1,2,3  ], [1, 2, 3] , [0, 0, 0]],
+#           [ [1, 2,3 ], [1, 2, 3] , [1, 1, 1] ]
+#         ],
+#         [
+#             [[-1, 1, 0], [0, 0, 0], [-1, 1, 0]],
+#             [[-1, 1, 0], [-1, 1, 1], [-4, 1, 4]]
+#         ]
+#     ]    )
+#     feature_maps_np = np.transpose(feature_maps_np, axes=[0,2,3,1])
 
-    feature_maps_cst = tf.constant(feature_maps_np, dtype=tf.float32)
-    lstm_state_cst = tf.constant( np.array([[1,0,1,0,1, 0], [0, 1, 1, 0, 1, 0 ]]), dtype=tf.float32)
+#     feature_maps_cst = tf.constant(feature_maps_np, dtype=tf.float32)
+#     lstm_state_cst = tf.constant( np.array([[1,0,1,0,1, 0], [0, 1, 1, 0, 1, 0 ]]), dtype=tf.float32)
 
-    modulated_feat_cst = film_layer(feature_maps_cst, lstm_state_cst, reuse=True)
-    print(modulated_feat_cst)
+#     modulated_feat_cst = film_layer(feature_maps_cst, lstm_state_cst, reuse=True)
+#     print(modulated_feat_cst)

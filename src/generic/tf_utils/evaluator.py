@@ -46,7 +46,8 @@ class Evaluator(object):
 
 # Changing the signature of the funtion. For many test and val, we would prefer different writers
     # def process(self, sess, iterator, outputs, writer = None, listener=None):
-    def process(self, sess, iterator, outputs, mod_val = 2, n_batch = None, writer = None, listener=None):
+    # using n_batch[0] as the effect is like pass by reference for lists
+    def process(self, sess, iterator, outputs, mod_val = 2, n_batch = [0], writer = None, listener=None):
 
         assert isinstance(outputs, list), "outputs must be a list"
 
@@ -92,7 +93,7 @@ class Evaluator(object):
 
                 if listener is not None and listener.valid(var):
                     listener.after_batch(result, batch, is_training)
-            n_batch[0] = 1 + n_batch[0]
+            n_batch[0] += 1
             n_iter += 1
 
         if listener is not None:

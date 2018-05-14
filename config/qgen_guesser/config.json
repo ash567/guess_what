@@ -1,37 +1,70 @@
 {
 
-  "model": {
+	"model": {
 
-    "word_embedding_size": 512,
-    "num_lstm_units": 1024,
-    "image_embedding_size": 512,
-    "attention" : {
-        "mode": "none",
-        "no_attention_mlp": 256,
-        "no_glimpses": 2
-      },
-
-    "image": {
-      "image_input": "raw",
-      "dim": [224, 224, 3]
-    }
-
-  },
-
-  "optimizer": {
-    "no_epoch": 30,
-    "learning_rate": 1e-4,
-    "batch_size": 32,
-    "clip_val": 5
-  },
+		"name" : "qgen_guesser with CLEVR + dropout + attention",
 
 
-  "seed": -1,
-  "freq": 1,
-  "comments":{
-    "attentiong": "Attention inserted",
-    "dimetiontion of image beforee": "if using raw take 224, 224, 3 else just 1000"
+		"batch_size": 8,
+		"word_embedding_size": 512,
+		"num_lstm_units": 1024,
+		"image_embedding_size": 512,
 
-  }
+		"cat_emb_dim": 256,
+		"obj_mlp_units": 512,
+		"spat_dim": 8,
+		"no_categories": 90,
+		"dialog_emb_dim": 1024,
+
+		"guesser_loss_weight": 1.0,
+		"qgen_loss_weight": 1.0,
+
+
+		"activation": "tanh",
+		"no_question_mlp": 512,
+	    "no_picture_mlp": 512,
+    	"no_hidden_prefinal_mlp": 256,
+    	"no_hidden_final_mlp": 256,
+
+    	"pooling": "max",
+		"image": {
+			"image_input": "raw",
+			"dim": [224, 224, 3],
+
+			"normalize": true,
+
+			"resnet_version": 50,
+			"finetune" : ["block4"],
+			
+			"attention" : {
+	        "mode": "none",
+	        "no_attention_mlp": 256,
+	        "no_glimpses": 2
+      		},
+
+			"cbn": {
+				"use_cbn": true,
+				"cbn_embedding_size": 128,
+				"excluded_scope_names": ["block1", "block2", "block3"]
+			}
+		}
+
+	},
+
+	"optimizer": {
+		"no_epoch": 30,
+		"learning_rate": 1e-4,
+		"clip_val": 5
+	},
+
+
+	"seed": -1,
+	"freq": 1,
+	"comments":{
+		"attentiong": "Attention inserted",
+		"dimetiontion of image before": "if using raw take 224, 224, 3 else just 1000",
+		"dimention of dialog_emb": "dialog_emb_dim and num_lstm_units should be same" 
+
+	}
 }
 

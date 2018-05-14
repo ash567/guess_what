@@ -36,7 +36,7 @@ if __name__ == '__main__':
     parser.add_argument("-config", type=str, help="Configuration file")
     parser.add_argument("-dict_file", type=str, default="dict.json", help="Dictionary file name")
     parser.add_argument("-load_checkpoint", type=str, help="Load model parameters from specified checkpoint")
-    parser.add_argument("-continue_exp", lambda x: bool(strtobool(x)), default="False", help="Continue previously started experiment?")
+    parser.add_argument("-continue_exp", type = lambda x: bool(strtobool(x)), default="False", help="Continue previously started experiment?")
     parser.add_argument("-gpu_ratio", type=float, default=1., help="How many GPU ram is required? (ratio)")
     parser.add_argument("-no_thread", type=int, default=1, help="No thread to load batch")
 
@@ -85,7 +85,7 @@ if __name__ == '__main__':
     #############################
 
     # Load config
-    batch_size = config['optimizer']['batch_size']
+    batch_size = config['model']['batch_size']
     no_epoch = config["optimizer"]["no_epoch"]
 
     # create a saver to store/load checkpoint

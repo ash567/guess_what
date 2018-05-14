@@ -4,12 +4,14 @@ from neural_toolbox import rnn, utils
 
 from generic.tf_utils.abstract_network import AbstractNetwork
 
-
+# This does not use image anywhere!!
+# Instead of dot product of [image(in code missing) + dialog feature] with object feature, it does matmul 
 class GuesserNetwork(AbstractNetwork):
     def __init__(self, config, num_words, device='', reuse=False):
         AbstractNetwork.__init__(self, "guesser", device=device)
 
-        mini_batch_size = None
+        mini_batch_size = config['batch_size']
+        # print "printing mini_batch_size %d" %(mini_batch_size)
 
         with tf.variable_scope(self.scope_name, reuse=reuse):
 
@@ -58,17 +60,18 @@ class GuesserNetwork(AbstractNetwork):
                                                num_hidden=config['num_lstm_units'],
                                                seq_length=self.seq_length)
 
+            # print last_states
             last_states = tf.reshape(last_states, [-1, config['num_lstm_units'], 1])
             scores = tf.matmul(obj_embs, last_states)
             scores = tf.reshape(scores, [-1, tf.shape(self.obj_cats)[1]])
 
             def masked_softmax(scores, mask):
                 # subtract max for stability
-                scores = scores - tf.tile(tf.reduce_max(scores, axis=(1,), keep_dims=True), [1, tf.shape(scores)[1]])
+                scores = scores - tf.tile(tf.reduce_max(scores, axis=(1,), keepdims=True), [1, tf.shape(scores)[1]])
                 # compute padded softmax
                 exp_scores = tf.exp(scores)
                 exp_scores *= mask
-                exp_sum_scores = tf.reduce_sum(exp_scores, axis=1, keep_dims=True)
+                exp_sum_scores = tf.reduce_sum(exp_scores, axis=1, keepdims=True)
                 return exp_scores / tf.tile(exp_sum_scores, [1, tf.shape(exp_scores)[1]])
 
             self.softmax = masked_softmax(scores, self.obj_mask)
@@ -76,6 +79,16 @@ class GuesserNetwork(AbstractNetwork):
 
             self.loss = tf.reduce_mean(utils.cross_entropy(self.softmax, self.targets))
             self.error = tf.reduce_mean(utils.error(self.softmax, self.targets))
+
+            # Printing the shapes of the matrices
+
+            print "\n****\nPrintint Shapes of Guesser Networks\n"
+
+            print last_states
+            print self.softmax
+
+            print "\nEnding printing shapes\n****\n"
+
 
     def get_loss(self):
         return self.loss

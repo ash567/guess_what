@@ -51,7 +51,6 @@ class CBNfromLSTM(CBNAbtract):
         self.use_betas = use_betas
         self.use_gammas = use_gammas
 
-
     def create_cbn_input(self, feature_maps):
         no_features = int(feature_maps.get_shape()[3])
         batch_size = tf.shape(feature_maps)[0]
