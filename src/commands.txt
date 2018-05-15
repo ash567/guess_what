@@ -1,6 +1,111 @@
+Format:
+
+sudo mkfs -t ext4 /dev/xvdf
+sudo chown `whoami` datavol/
+
+------------------------------------------------------
+Clone Repo
+git config --global user.name "Ishu Garg"
+git config --global user.email "ishugarg567@gmail.com"
+git clone --recursive https://github.com/ash567/guess_what.git
+---------------------------------------
+Screen commands
+Find the screen id: ctl + a + w
+kill: ctl + A + K
+detach: ctl + A + d
+List Screen: screen -ls
+log the screen: ctl + A + H, screen -L
+reattach: screen -r id
+create: ctl + A + c
+switch: ctl + A + n (next), ctl + A + p (previous) 
+---------------------------------------
+cd guesswhat
+
+Making directories
+
+mkdir data; mkdir data/img ; mkdir data/img/raw ; mkdir data/img/ft_vgg_img ; mkdir data/img/ft_vgg_crop
+mkdir out; mkdir out/oracle ; mkdir out/guesser; mkdir out/qgen; mkdir out/looper;
+
+
+Downloading data
+
+COCO Images
+wget http://msvocds.blob.core.windows.net/coco2014/train2014.zip -P data/img/ ; unzip data/img/train2014.zip -d data/img/raw
+
+wget http://msvocds.blob.core.windows.net/coco2014/val2014.zip -P data/img/ ; unzip data/img/val2014.zip -d data/img/raw
+
+wget http://msvocds.blob.core.windows.net/coco2014/test2014.zip -P data/img/ ; unzip data/img/test2014.zip -d data/img/raw
+
+Guess_What Dataset
+
+wget https://s3-us-west-2.amazonaws.com/guess-what/guesswhat.train.jsonl.gz -P data/
+wget https://s3-us-west-2.amazonaws.com/guess-what/guesswhat.valid.jsonl.gz -P data/
+wget https://s3-us-west-2.amazonaws.com/guess-what/guesswhat.test.jsonl.gz -P data/
+
+# creates a folder `raw` with filenames as expected by preprocessing script below
+
+python src/guesswhat/preprocess_data/rewire_coco_image_id.py -image_dir /home/ubuntu/datavol/guess_what/data/img/raw -data_out /home/ubuntu/datavol/guess_what/data/img/raw
+
+Create Dictionary
+
+python src/guesswhat/preprocess_data/create_dictionary.py -data_dir data -dict_file dict.json -min_occ 3
+--------------------------------------------
+Activate tensorflow:
+
+source activate tensorflow_p27
+
+To install
+**********
+
+pip install --upgrade pip
+    tensorflow-gpu==1.5\
+
+pip install --upgrade \
+    Cython \
+    nltk \
+    tqdm \
+    image \
+    multiprocess
+
+
+
+-------------------------------------
 Before running code print
 
 export PYTHONPATH=src:${PYTHONPATH} 
+-------------------------------------
+Creating VGG Features
+
+
+array=( img crop )
+for mode in "${array[@]}"; do
+   python src/guesswhat/preprocess_data/extract_img_features.py \
+     -img_dir data/img/raw \
+     -data_dir data \
+     -out_dir data/img/ft_vgg_$mode \
+     -network vgg \
+     -ckpt data/vgg_16.ckpt \
+     -feature_name fc8 \
+     -mode $mode \
+     -gpu_ratio 0.0 \
+     -batch_size 4 \
+     -no_thread 4
+done
+
+
+---------------------------------------
+Building COCO API
+
+-----------------------------------
+Connect:
+ssh -i "guess_what.pem" ubuntu@ec2-54-172-173-141.compute-1.amazonaws.com
+
+Mount:
+mkdir datavol
+sudo mount /dev/xvdf datavol/
+sudo umount datavol/
+
+cd datavol
 
 ---------------------------
 training qgen_guesser
@@ -12,8 +117,16 @@ python src/guesswhat/train/train_qgen_guesser_supervised.py \
    -exp_dir out/qgen_guesser \
    -no_thread 2 \
    -continue_exp False \
+
    -gpu_ratio 0.0
 
+
+python src/guesswhat/train/train_qgen_supervised.py \
+   -data_dir data \
+   -img_dir data/ft_vgg_img \
+   -config config/qgen/config.json \
+   -exp_dir out/qgen \
+   -no_thread 2 
 
 Checking SSH Keys
 ---------------------------------------------------
@@ -27,14 +140,6 @@ eval "$(ssh-agent -s)"
 ssh-add ~/.ssh/id_rsa
 
 
-Setting up account on local machine
-------------------------------------------------------
-git config --global user.name "Ishu Garg"
-git config --global user.name
-git config --global user.email "ishugarg567@gmail.com"
-git config --global user.email
----------------------------------------
-
 Copyting the github project
 ---------------------------
 
@@ -47,8 +152,6 @@ git remote -v
 git push origin master
 
 
-
-
 Commands:
 
 To clone the repo:
@@ -59,15 +162,6 @@ git clone --recursive https://github.com/GuessWhatGame/guesswhat.git
 To Unzip
 ********
 unzip data/img/test2014.zip -d data/img/raw
-
-To install
-**********
-pip install \
-    tensorflow\
-    nltk \
-    tqdm \
-    image
-
 
 
 Making coco api
@@ -142,23 +236,6 @@ python src/guesswhat/train/train_guesser.py \
    -no_thread 2 \
    -continue_exp False \
    -gpu_ratio 0.0
-
----------------------------
-
-array=( crop )
-for mode in "${array[@]}"; do
-   python src/guesswhat/preprocess_data/extract_img_features.py \
-     -img_dir data/img/raw \
-     -data_dir data \
-     -out_dir data/img/ft_vgg_$mode \
-     -network vgg \
-     -ckpt data/vgg_16.ckpt \
-     -feature_name fc8 \
-     -mode $mode \
-     -gpu_ratio 0.0 \
-     -batch_size 4 \
-     -no_thread 4
-done
 ---------------------------------------
 
 git too large file 

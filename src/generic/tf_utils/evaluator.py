@@ -84,9 +84,9 @@ class Evaluator(object):
                 # The writer is now not a member of the class
                     # self.writer.add_summary(result)
                     if writer is not None:
-                        # if steps == 0 or steps % mod_val == 1:
+                        if steps == 0 or steps % mod_val == 1:
                         # writer.add_summary(result, steps)
-                        writer.add_summary(result, n_batch[0])
+                            writer.add_summary(result, n_batch[0])
                     else:
                         print "writer is None. Can not write summary [in evaluator.py]"
 
