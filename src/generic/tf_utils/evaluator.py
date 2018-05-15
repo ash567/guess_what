@@ -62,7 +62,7 @@ class Evaluator(object):
             outputs = list(OrderedDict.fromkeys(outputs))  # remove duplicate while preserving ordering
             listener.before_epoch(is_training)
 
-        n_iter = 1.
+        n_iter = 1
         aggregated_outputs = [0.0 for v in outputs if is_scalar(v) and v in original_outputs]
 
         for batch in tqdm(iterator):
@@ -84,7 +84,7 @@ class Evaluator(object):
                 # The writer is now not a member of the class
                     # self.writer.add_summary(result)
                     if writer is not None:
-                        if steps == 0 or steps % mod_val == 1:
+                        if n_batch[0] == 0 or n_batch[0] % mod_val == 1:
                         # writer.add_summary(result, steps)
                             writer.add_summary(result, n_batch[0])
                     else:
