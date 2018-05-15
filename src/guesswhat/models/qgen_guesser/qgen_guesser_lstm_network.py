@@ -252,9 +252,9 @@ class QGenGuesserNetworkLSTM(ResnetModel):
 
 				# FILMING the Features
 
-				self.filmed_picture_out = film_layer(ft=self.CBN_picture_out, context=last_states)
+				# self.filmed_picture_out = film_layer(ft=self.CBN_picture_out, context=last_states)
 				# TODO: Make n a hyperparameter and add it to network parameters
-				n = 3
+				n = 1
 				for i in range(n):
 					with tf.variable_scope('film_layer_' + str(i)):
 						self.filmed_picture_out = FiLMResblock(features=self.filmed_picture_out, context=last_states, is_training=self.is_training).get()
@@ -305,7 +305,8 @@ class QGenGuesserNetworkLSTM(ResnetModel):
 				self.full_embedding = self.picture_embedding * self.question_embedding
 				# self.full_embedding = tf.nn.dropout(full_embedding, dropout_keep)
 
-				self.guesser_out_0 = utils.fully_connected(self.full_embedding, config["no_hidden_prefinal_mlp"], scope='hidden_prefinal', activation=activation_name)
+				# self.guesser_out_0 = utils.fully_connected(self.full_embedding, config["no_hidden_prefinal_mlp"], scope='hidden_prefinal', activation=activation_name)
+				self.guesser_out_0 = self.full_embedding
 				
 				# out = tf.nn.dropout(out, dropout_keep)
 				
