@@ -6,7 +6,7 @@ from neural_toolbox.cbn import ConditionalBatchNorm
 
 from generic.tf_factory.attention_factory import get_attention
 
-def get_image_features(image, question, is_training, scope_name, config, dropout_keep=1., reuse=False):
+def get_image_features(image, question, is_training, scope_name, config, dropout_keep=1., reuse=False, att = True):
 	image_input_type = config["image_input"]
 
 	# Extract feature from 1D-image feature s
@@ -28,17 +28,18 @@ def get_image_features(image, question, is_training, scope_name, config, dropout
 
 			if "cbn" in config and config["cbn"].get("use_cbn", False) and question is not None:
 				cbn_factory = CBNfromLSTM(question, no_units=config['cbn']["cbn_embedding_size"])
-				# print config['cbn']["cbn_embedding_size"]
-				# print
-				# print
 				excluded_scopes = config["cbn"].get('excluded_scope_names', [])
 				cbn = ConditionalBatchNorm(cbn_factory, excluded_scope_names=excluded_scopes,
 										   is_training=is_training)
 
-			# print cbn
-			# print "cbn" in config
-			# print config["cbn"].get("use_cbn", False)
-			# print question is not None
+			# Due to the following bug
+	        #"There is a bug with classic batchnorm with slim networks (https://github.com/tensorflow/tensorflow/issues/4887). \n" \
+	        #"Please use the following config -> 'cbn': {'use_cbn':true, 'excluded_scope_names': ['*']}"
+			else:
+				cbn_factory = CBNfromLSTM(question, no_units=config['cbn']["cbn_embedding_size"])
+				excluded_scopes = ["*"]
+				cbn = ConditionalBatchNorm(cbn_factory, excluded_scope_names=excluded_scopes, is_training=is_training)
+
 
 			# Create ResNet
 			resnet_version = config['resnet_version']
@@ -58,7 +59,8 @@ def get_image_features(image, question, is_training, scope_name, config, dropout
 			image_feature_maps = image
 
 		# apply attention
-		image_out = get_attention(image_feature_maps, question,
+		if att:
+			image_out = get_attention(image_feature_maps, question,
 								  config=config["attention"],
 								  dropout_keep=dropout_keep,
 								  reuse=reuse)

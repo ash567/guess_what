@@ -59,9 +59,9 @@ class QGenGuesserNetworkLSTM(ResnetModel):
 					n_out=config['no_hidden_final_mlp'],
 					activation='relu',
 					scope='l2')
-			print 
-			print 
-			print h2
+			# print 
+			# print 
+			# print h2
 			# TODO: Object Embeddings do not have image features right now
 			obj_embs = tf.reshape(h2, [-1, tf.shape(self.obj_cats)[1], config['no_hidden_final_mlp']])
 
@@ -137,9 +137,37 @@ class QGenGuesserNetworkLSTM(ResnetModel):
 				# TODO: Create a different config for this attention
 				# Putting images
 				tf.summary.image("image", self.images)
-				self.image_out = get_attention(self.images, None, config["image"]["attention"]) #TODO: improve by using the previous lstm state?
-				self.image_out = tf.contrib.layers.flatten(self.image_out)
+				self.image_out = get_image_features(
+					image=self.images, question = None,
+					is_training=self.is_training,
+					scope_name=scope.name,
+					config=config['image'],
+					att = False
+				)
+				
+				image_pooling_size = [int((self.image_out).get_shape()[1]), int((self.image_out).get_shape()[2])]
+				image_feature_depth = int((self.image_out).get_shape()[3])
 
+				self.filmed_picture_out = tf.layers.max_pooling2d(	self.image_out,
+																	image_pooling_size,
+																	1,
+																	padding='valid',
+																	data_format='channels_last',
+																	name='max_pooling_image_out')
+				
+				# self.filmed_picture_out = tf.layers.average_pooling2d(	self.filmed_picture_out,
+				# 														final_pooling_size,
+				# 														1,
+				# 														padding='valid',
+				# 														data_format='channels_last',
+				# 														name='average_pooling_filmed_picture_out')
+
+				# self.image_out = get_attention(self.images, None, config["image"]["attention"]) #TODO: improve by using the previous lstm state?
+				# self.image_out = tf.contrib.layers.flatten(self.image_out)
+
+			print image_out
+			print
+			print
 
 
 			# Reduce the embedding size of the image
@@ -275,6 +303,7 @@ class QGenGuesserNetworkLSTM(ResnetModel):
 
 				final_pooling_size = [int((self.filmed_picture_out).get_shape()[1]), int((self.filmed_picture_out).get_shape()[2])]
 				final_feature_depth = int((self.filmed_picture_out).get_shape()[3])
+
 				if str(config["pooling"]).lower() == 'max':
 					self.filmed_picture_out = tf.layers.max_pooling2d(	self.filmed_picture_out,
 																		final_pooling_size,
