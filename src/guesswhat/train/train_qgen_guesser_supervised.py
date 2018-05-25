@@ -153,7 +153,7 @@ if __name__ == '__main__':
 									  batch_size=batch_size,
 									  batchifier=batchifier,
 									  shuffle=False)
-
+			
 			# Changed for tensorboard
 			[valid_loss, _] = evaluator.process(sess, valid_iterator, outputs=outputs + [network.summary], n_batch = global_valid_step, writer = writer_v, mod_val = config["freq"] )
 			print "The Golbal valid Step is : %d" %(global_valid_step[0])

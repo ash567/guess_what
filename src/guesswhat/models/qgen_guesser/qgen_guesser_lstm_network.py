@@ -23,7 +23,8 @@ class QGenGuesserNetworkLSTM(ResnetModel):
 
 			# We set batch size to be none as the batch size for the validation set and train set are different
 			# mini_batch_size = None
-			mini_batch_size = config['batch_size']
+			# mini_batch_size = config['batch_size']
+			mini_batch_size = None
 			self.guesser_loss_weight = tf.constant(config["guesser_loss_weight"], dtype = tf.float32, name = "guesser_loss_weight")
 			self.qgen_loss_weight = tf.constant(config["qgen_loss_weight"], dtype = tf.float32, name = "qgen_loss_weight")
 			self.loss = 0    
