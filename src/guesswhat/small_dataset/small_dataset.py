@@ -36,47 +36,47 @@ if __name__ == '__main__':
     path = args.data_dir
     cwd = os.getcwd()
     
-    # for (n, s) in options:
-    #     print
-    #     print s
-    #     print "****"
+    for (n, s) in options:
+        print
+        print s
+        print "****"
 
-    #     s = path + "guesswhat." + s
-    #     s_big = s + "_big"
-    #     gw_data = s + ".jsonl"
-    #     com_gw_data = gw_data + ".gz"
-    #     big_gw_data = s_big + ".jsonl"
-    #     com_big_gw_data =  big_gw_data + ".gz"
+        s = path + "guesswhat." + s
+        s_big = s + "_big"
+        gw_data = s + ".jsonl"
+        com_gw_data = gw_data + ".gz"
+        big_gw_data = s_big + ".jsonl"
+        com_big_gw_data =  big_gw_data + ".gz"
 
-    #     cmd = []
+        cmd = []
 
-    #     if os.path.isfile(com_big_gw_data) and os.path.isfile(com_gw_data):
-    #         print "Small dataset already present. Deleting the file already present and creating new files"
-    #         print
+        if os.path.isfile(com_big_gw_data) and os.path.isfile(com_gw_data):
+            print "Small dataset already present. Deleting the file already present and creating new files"
+            print
 
-    #         # Unzipping the dataset
-    #         cmd.append("gunzip " + com_big_gw_data)
-    #         # Deleting the old file
-    #         cmd.append("rm " + com_gw_data)
+            # Unzipping the dataset
+            cmd.append("gunzip " + com_big_gw_data)
+            # Deleting the old file
+            cmd.append("rm " + com_gw_data)
 
-    #     else:
-    #         # Unzipping the dataset
-    #         cmd.append("gunzip " + com_gw_data)
-    #         # renaming the true large dataset
-    #         cmd.append("mv " + gw_data + " " + big_gw_data)
+        else:
+            # Unzipping the dataset
+            cmd.append("gunzip " + com_gw_data)
+            # renaming the true large dataset
+            cmd.append("mv " + gw_data + " " + big_gw_data)
 
-    #     # Making a new small dataset (Taking only some of the games)
-    #     cmd.append("head -%d " % (n * args.no_examples) + big_gw_data + " > " + gw_data)
-    #     # Zipping back the files
-    #     cmd.append("gzip " + big_gw_data)
-    #     cmd.append("gzip " + gw_data)
+        # Making a new small dataset (Taking only some of the games)
+        cmd.append("head -%d " % (n * args.no_examples) + big_gw_data + " > " + gw_data)
+        # Zipping back the files
+        cmd.append("gzip " + big_gw_data)
+        cmd.append("gzip " + gw_data)
 
-    #     for c in cmd:
-    #         print c
-    #         os.system(c)
-    #         # break
-    #     print
-    #     print  "----------------"
+        for c in cmd:
+            print c
+            os.system(c)
+            # break
+        print
+        print  "----------------"
 
 
     print "Printing the image files"
@@ -101,7 +101,7 @@ if __name__ == '__main__':
     raw_dir = path + "img/raw"
     big_raw_dir = raw_dir + "_big/"
     raw_dir = raw_dir + "/"
-    image_subdir = ["train2014/", "val2014/"]
+    image_subdir = ["train2014/", "val2014/", "test2014/"]
 
     # Rename the raw directory if raw big does not exitst
     # Also assuming train2014 and val2014 are present in the system

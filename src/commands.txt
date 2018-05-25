@@ -49,6 +49,13 @@ python src/guesswhat/preprocess_data/rewire_coco_image_id.py -image_dir /home/ub
 Create Dictionary
 
 python src/guesswhat/preprocess_data/create_dictionary.py -data_dir data -dict_file dict.json -min_occ 3
+
+Making CoCo API
+-----------------
+
+cd src/cocoapi/PythonAPI/
+make
+
 --------------------------------------------
 Activate tensorflow:
 
@@ -60,6 +67,7 @@ To install
 pip install --upgrade pip
     tensorflow-gpu==1.5\
 
+sudo apt-get install htop
 pip install --upgrade \
     Cython \
     nltk \
@@ -100,17 +108,24 @@ Building COCO API
 Connect:
 ssh -i "guess_what.pem" ubuntu@ec2-54-172-173-141.compute-1.amazonaws.com
 
+
+
 Mount:
-mkdir datavol
-sudo mount /dev/xvdf datavol/
 sudo umount datavol/
 
-cd datavol
+mkdir datavol
+sudo mount /dev/xvdf datavol/
+
+
+cd datavol/guess_what/
+
+--------------------------
+
 
 ---------------------------
 training qgen_guesser
 
-python src/guesswhat/train/train_qgen_guesser_supervised.py \
+python2.7 src/guesswhat/train/train_qgen_guesser_supervised.py \
    -data_dir data \
    -img_dir data/img/raw \
    -config config/qgen_guesser/config.json \
