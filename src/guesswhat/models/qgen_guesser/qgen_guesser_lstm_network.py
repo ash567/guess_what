@@ -150,7 +150,7 @@ class QGenGuesserNetworkLSTM(ResnetModel):
 					image_pooling_size = [int((self.image_out).get_shape()[1]), int((self.image_out).get_shape()[2])]
 					image_feature_depth = int((self.image_out).get_shape()[3])
 
-					self.filmed_picture_out = tf.layers.max_pooling2d(	self.image_out,
+					self.image_out = tf.layers.max_pooling2d(self.image_out,
 																		image_pooling_size,
 																		1,
 																		padding='valid',
@@ -167,7 +167,7 @@ class QGenGuesserNetworkLSTM(ResnetModel):
 					# self.image_out = get_attention(self.images, None, config["image"]["attention"]) #TODO: improve by using the previous lstm state?
 					# self.image_out = tf.contrib.layers.flatten(self.image_out)
 
-				print image_out
+				print self.image_out
 				print
 				print
 
