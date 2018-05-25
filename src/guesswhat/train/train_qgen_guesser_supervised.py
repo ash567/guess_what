@@ -144,15 +144,15 @@ if __name__ == '__main__':
 			print "The Golbal Train Step is : %d" %(global_train_step[0])
 
 			# Don't know why the batch size is doubled???
-			# valid_iterator = Iterator(validset, pool=cpu_pool,
-			#                           batch_size=batch_size*2,
-			#                           batchifier=batchifier,
-			#                           shuffle=False)
-
 			valid_iterator = Iterator(validset, pool=cpu_pool,
-									  batch_size=batch_size,
-									  batchifier=batchifier,
-									  shuffle=False)
+			                          batch_size=batch_size*2,
+			                          batchifier=batchifier,
+			                          shuffle=False)
+
+			# valid_iterator = Iterator(validset, pool=cpu_pool,
+			# 						  batch_size=batch_size,
+			# 						  batchifier=batchifier,
+			# 						  shuffle=False)
 
 			# Changed for tensorboard
 			[valid_loss, _] = evaluator.process(sess, valid_iterator, outputs=outputs + [network.summary], n_batch = global_valid_step, writer = writer_v, mod_val = config["freq"] )
