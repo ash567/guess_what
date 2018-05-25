@@ -156,6 +156,7 @@ class QGenGuesserNetworkLSTM(ResnetModel):
 																		padding='valid',
 																		data_format='channels_last',
 																		name='max_pooling_image_out')
+					self.image_out = tf.reshape(self.image_out, [-1, image_feature_depth])
 
 					# self.filmed_picture_out = tf.layers.average_pooling2d(	self.filmed_picture_out,
 					# 														final_pooling_size,
